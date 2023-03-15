@@ -27,6 +27,12 @@ def player_movement():
 def main():
     global screen
     pygame.init()
+    keys_player1 = [False, False, False]
+    keys_player2 = [False, False, False]
+    player1_loc = []
+    player2_loc = []
+    direction1 = "up"
+    direction2 = "up"
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     ball = pygame.image.load("C:/Users/noamg/Downloads/walk-0.png")
     ball_rect = ball.get_rect()
@@ -46,7 +52,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
+            if event.type == pygame.KEYDOWN:
+                player_movement(keys_player1, keys_player2, event, player1_loc, player2_loc, direction1, direction2)
         pygame.display.flip()
     pygame.quit()
 
