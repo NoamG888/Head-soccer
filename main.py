@@ -1,6 +1,5 @@
 import pygame
 from constants import *
-from Buttons import Buttons
 
 
 # displays an image on the screen
@@ -16,86 +15,98 @@ def load_images():
 
 
 # in charge of the ball's movement after a player hits it
-def ball_movement(ball_rect, ball_speed, player_rect):
+def ball_movement(ball_rect, player_rect1, player_rect2):
     if ball_rect.left < 0 or ball_rect.right > WINDOW_WIDTH:
         ball_speed[0] = -ball_speed[0]
     if ball_rect.top < 0 or ball_rect.bottom > WINDOW_HEIGHT:
         ball_speed[1] = -ball_speed[1]
-    if player_rect.bottom >= ball_rect.top >= player_rect.top:
-        if ball_rect.left == player_rect.right or ball_rect.right == player_rect.left:
-            ball_speed[0] = -ball_speed[0]
-    if player_rect.left <= ball_rect.left <= player_rect.right:
-        if ball_rect.top == player_rect.bottom or ball_rect.bottom == player_rect.top:
-            ball_speed[1] = -ball_speed[1]
 
-def player_movement(key, player1_loc, player2_loc, player1_dir, player2_dir):
-    if key == pygame.K_RIGHT:
-        player1_loc[0] += 5
-    if key == pygame.K_LEFT:
-        player1_loc[0] -= 5
-    if key == pygame.K_UP:
-        player1_dir, player1_loc = jump(player1_dir, player1_loc)
+    if pygame.Rect.colliderect(ball_rect, player_rect1):
+        if player_rect1.left < ball_rect.centerx < player_rect1.right:
+            if player_rect1.top <= ball_rect.bottom or player_rect1.bottom >= ball_rect.top:
+                ball_speed[1] = -ball_speed[1]
+        elif player_rect1.top < ball_rect.centery < player_rect1.bottom:
+            if player_rect1.right >= ball_rect.left or player_rect1.left <= ball_rect.right:
+                ball_speed[0] = -ball_speed[0]
+    if pygame.Rect.colliderect(ball_rect, player_rect2):
+        if player_rect2.left < ball_rect.centerx < player_rect2.right:
+            if player_rect2.top <= ball_rect.bottom or player_rect2.bottom >= ball_rect.top:
+                ball_speed[1] = -ball_speed[1]
+        elif player_rect2.top < ball_rect.centery < player_rect2.bottom:
+            if player_rect2.right >= ball_rect.left or player_rect2.left <= ball_rect.right:
+                ball_speed[0] = -ball_speed[0]
 
-    if key == pygame.K_d:
-        player2_loc[0] += 5
-    if key == pygame.K_a:
-        player2_loc[0] -= 5
-    if key == pygame.K_w:
-        player2_dir, player2_loc = jump(player2_dir, player2_loc)
 
-    return player1_dir, player1_loc, player2_dir, player2_loc
+def player_movement(event, player1_loc, player2_loc):
+    if event.key == pygame.K_RIGHT:
+        player1_loc[0] += 10
+    if event.key == pygame.K_LEFT:
+        player1_loc[0] -= 10
+
+    if event.key == pygame.K_d:
+        player2_loc[0] += 10
+    if event.key == pygame.K_a:
+        player2_loc[0] -= 10
+
+    return player1_loc, player2_loc
 
 
 def jump(direction, loc):
     if direction == "up":
-        if loc[1] >= PLAYER_MIN_Y:
-            loc[1] -= 5
-        else:
+        if loc[1] <= PLAYER_MIN_Y:
             direction = "down"
-    if direction == "down":
-        if loc[1] <= PLAYER_MAX_Y:
-            loc[1] += 5
-        else:
+        loc[1] -= 20
+        pygame.time.delay(20)
+        return direction, loc
+    else:
+        if loc[1] >= PLAYER_MAX_Y:
             direction = "up"
-    return direction, loc
+        loc[1] += 20
+        return direction, loc
 
 
 def main():
     global screen
     pygame.init()
-    player1_loc = []
-    player2_loc = []
+    player1_loc = [700, 300]
+    player2_loc = [100, 300]
+    player1_keys = [False, False, False]
+    player2_keys = [False, False, False]
     player1_dir = "up"
     player2_dir = "up"
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     # ball parameters
     ball = pygame.image.load("C:/Users/noamg/Downloads/walk-0.png")
     ball_rect = ball.get_rect()
+    global ball_speed
     ball_speed = [2, 2]
-    square = pygame.Rect(300, 100, 400, 200)
+    square1 = pygame.Rect(player1_loc[0], player1_loc[1], 100, 100)
+    square2 = pygame.Rect(player2_loc[0], player2_loc[1], 100, 100)
     # run loop
     running = True
     while running:
         # ball movement
-        ball_movement(ball_rect, ball_speed, square)
+        ball_movement(ball_rect, square1, square2)
         ball_rect = ball_rect.move(ball_speed)
-        pygame.time.wait(5)
+        pygame.display.flip()
+        pygame.time.wait(10)
         # display screen
         screen.fill(WHITE)
-        pygame.draw.rect(screen, (0, 150, 0), square)
+        pygame.draw.rect(screen, (0, 150, 0), square1)
+        pygame.draw.rect(screen, (150, 0, 0), square2)
         # display ball
         screen.blit(ball, ball_rect)
-        # update screen
-        pygame.display.flip()
         # checks for events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                player1_dir, player1_loc, player2_dir, player2_loc = player_movement(event, player1_loc, player2_loc,
-                                                                                     player1_dir, player2_dir)
                 # controls player movement
-                player1_dir, player1_loc, player2_dir, player2_loc = player_movement(event, player1_loc, player2_loc, player1_dir, player2_dir)
+                player1_loc, player2_loc = player_movement(event, player1_loc, player2_loc)
+                square1 = pygame.Rect(player1_loc[0], player1_loc[1], 100, 100)
+                square2 = pygame.Rect(player2_loc[0], player2_loc[1], 100, 100)
+                pygame.draw.rect(screen, (0, 150, 0), square1)
+                pygame.draw.rect(screen, (150, 0, 0), square2)
         # updates the screen
         pygame.display.flip()
     # quits the game
