@@ -15,26 +15,47 @@ def load_images():
     pass
 
 
-def ball_movement():
-    pass
+# in charge of the ball's movement after a player hits it
+def ball_movement(ball_rect, ball_speed):
+    ball_rect = ball_rect.move(ball_speed)
+    if ball_rect.left < 0 or ball_rect.right > WINDOW_WIDTH:
+        ball_speed[0] = -ball_speed[0]
+    if ball_rect.top < 0 or ball_rect.bottom > WINDOW_HEIGHT:
+        ball_speed[1] = -ball_speed[1]
+
 
 
 def player_movement():
     pass
 
-def jump():
-    print("jump")
 
 def main():
     global screen
     pygame.init()
+    keys_player1 = [False, False, False]
+    keys_player2 = [False, False, False]
+    player1_loc = []
+    player2_loc = []
+    direction1 = "up"
+    direction2 = "up"
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    # ball parameters
+    ball = pygame.image.load("C:/Users/noamg/Downloads/walk-0.png")
+    ball_rect = ball.get_rect()
+    ball_speed = [2, 2]
     running = True
     while running:
+        ball_movement(ball_rect, ball_speed)
+        screen.fill(WHITE)
+        screen.blit(ball, ball_rect)
+        pygame.display.flip()
+        pygame.time.wait(10)
+        ball_speed[0] - 0.1, ball_speed[1] - 0.1
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
+            if event.type == pygame.KEYDOWN:
+                player_movement(keys_player1, keys_player2, event, player1_loc, player2_loc, direction1, direction2)
         pygame.display.flip()
     pygame.quit()
 
