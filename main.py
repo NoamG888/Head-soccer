@@ -28,6 +28,37 @@ def ball_movement(ball_rect, ball_speed, player_rect):
         if ball_rect.top == player_rect.bottom or ball_rect.bottom == player_rect.top:
             ball_speed[1] = -ball_speed[1]
 
+def player_movement(key, player1_loc, player2_loc, player1_dir, player2_dir):
+    if key == pygame.K_RIGHT:
+        player1_loc[0] += 5
+    if key == pygame.K_LEFT:
+        player1_loc[0] -= 5
+    if key == pygame.K_UP:
+        player1_dir, player1_loc = jump(player1_dir, player1_loc)
+
+    if key == pygame.K_d:
+        player2_loc[0] += 5
+    if key == pygame.K_a:
+        player2_loc[0] -= 5
+    if key == pygame.K_w:
+        player2_dir, player2_loc = jump(player2_dir, player2_loc)
+
+    return player1_dir, player1_loc, player2_dir, player2_loc
+
+
+def jump(direction, loc):
+    if direction == "up":
+        if loc[1] >= PLAYER_MIN_Y:
+            loc[1] -= 5
+        else:
+            direction = "down"
+    if direction == "down":
+        if loc[1] <= PLAYER_MAX_Y:
+            loc[1] += 5
+        else:
+            direction = "up"
+    return direction, loc
+
 
 def main():
     global screen
@@ -61,6 +92,8 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
+                player1_dir, player1_loc, player2_dir, player2_loc = player_movement(event, player1_loc, player2_loc,
+                                                                                     player1_dir, player2_dir)
                 # controls player movement
                 player1_dir, player1_loc, player2_dir, player2_loc = player_movement(event, player1_loc, player2_loc, player1_dir, player2_dir)
         # updates the screen
