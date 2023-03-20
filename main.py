@@ -22,6 +22,8 @@ def ball_movement():
 def player_movement():
     pass
 
+def jump():
+    print("jump")
 
 def main():
     global screen
