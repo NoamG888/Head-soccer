@@ -29,10 +29,6 @@ def ball_movement(ball_rect, ball_speed, player_rect):
             ball_speed[1] = -ball_speed[1]
 
 
-def player_movement():
-    pass
-
-
 def main():
     global screen
     pygame.init()
