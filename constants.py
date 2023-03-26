@@ -4,8 +4,8 @@ WHITE = (255, 255, 255)
 GREEN = (0, 150, 0)
 
 # screen constants
-WINDOW_WIDTH = 900
-WINDOW_HEIGHT = 506.25
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 720
 
 # players constants
 PLAYER_HEIGHT = 100
