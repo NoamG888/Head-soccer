@@ -1,6 +1,7 @@
-import pygame
+import pygame, sys
 from constants import *
 from Text import Text
+from Buttons import  Button
 
 
 # displays an image on the screen
@@ -8,6 +9,8 @@ def add_image(image_path, x_position, y_position, width, height):
     image = pygame.image.load(image_path)
     image = pygame.transform.scale(image, (width, height))
     screen.blit(image, (x_position, y_position))
+
+
 
 
 # displays images on the screen using the "add_image" function
@@ -122,7 +125,8 @@ def main():
         # checks for events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                pygame.quit()
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 # controls player movement
                 player1_loc, player2_loc = player_movement(event, player1_loc, player2_loc)
@@ -137,4 +141,4 @@ def main():
 
 
 # runs "main" function
-main()
+
