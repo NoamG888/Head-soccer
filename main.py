@@ -1,7 +1,6 @@
-import pygame, sys
+import pygame
 from constants import *
 from Text import Text
-from Buttons import  Button
 
 
 # displays an image on the screen
@@ -11,16 +10,14 @@ def add_image(image_path, x_position, y_position, width, height):
     screen.blit(image, (x_position, y_position))
 
 
-
-
 # displays images on the screen using the "add_image" function
 def goal_check(ball_rect, left_goal_rect, right_goal_rect, goal_counter1, goal_counter2):
     if ball_rect.right <= left_goal_rect.right and ball_rect.top >= left_goal_rect.bottom:
-        goal_counter1.text += 1
+        goal_counter2.text += 1
         ball_rect = pygame.Rect((WINDOW_WIDTH-70) // 2, 50, 70, 70)
         return ball_rect
     if ball_rect.left >= right_goal_rect.left and ball_rect.top >= right_goal_rect.bottom:
-        goal_counter2.text += 1
+        goal_counter1.text += 1
         ball_rect = pygame.Rect((WINDOW_WIDTH-50) // 2, 50, 70, 70)
         return ball_rect
     return ball_rect
@@ -66,38 +63,38 @@ def jump(direction, loc):
     if direction == "up":
         if loc[1] <= PLAYER_MIN_Y:
             direction = "down"
-        loc[1] -= 20
-        pygame.time.delay(20)
+        else:
+            loc[1] -= 5
+        pygame.time.delay(10)
         return direction, loc
     else:
         if loc[1] >= PLAYER_MAX_Y:
-            direction = "up"
-        loc[1] += 20
+            direction = ""
+        else:
+            loc[1] += 5
         return direction, loc
 
 
 def main():
     global screen
     pygame.init()
-    player1_loc = [700, 375]
-    player2_loc = [100, 375]
-    # player1_dir = "up"
-    # player2_dir = "up"
+    player1_loc = [700, 600]
+    player2_loc = [100, 600]
+    player1_dir = ""
+    player2_dir = ""
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     # ball parameters
     ball = pygame.image.load("images/Untitled-3.png")
-    # goals = pygame.image.load("images/football_gate.gif")
-    # goals = pygame.transform.scale(goals, (WINDOW_WIDTH, WINDOW_HEIGHT))
     ball = pygame.transform.scale(ball, (50, 50))
     ball_rect = ball.get_rect()
     global ball_speed
     ball_speed = [3, 3]
     square1 = pygame.Rect(player1_loc[0], player1_loc[1], 100, 100)
     square2 = pygame.Rect(player2_loc[0], player2_loc[1], 100, 100)
-    left_goal_top = pygame.Rect(0, 270, 200, 5)
-    right_goal_top = pygame.Rect(750, 270, 202, 5)
-    goal_counter1 = Text(0, 100, 40, 80, WHITE, ARIEL)
-    goal_counter2 = Text(0, 800, 40, 80, WHITE, ARIEL)
+    left_goal_top = pygame.Rect(0, WINDOW_HEIGHT / 2, 220, 5)
+    right_goal_top = pygame.Rect(WINDOW_WIDTH - 250, WINDOW_HEIGHT / 2, 220, 5)
+    goal_counter1 = Text(0, 250, 50, 100, WHITE, ARIEL)
+    goal_counter2 = Text(0, WINDOW_WIDTH - 250, 50, 100, WHITE, ARIEL)
     # run loop
     running = True
     while running:
@@ -109,7 +106,10 @@ def main():
         ball_movement(ball_rect, square2)
         ball_movement(ball_rect, left_goal_top)
         ball_movement(ball_rect, right_goal_top)
-        # screen.blit(goals, (0, 0))
+        if player1_dir == "up" or player1_dir == "down":
+            player1_dir, player1_loc = (player1_dir, player1_loc)
+        if player2_dir == "up" or player2_dir == "down":
+            player2_dir, player2_loc = (player2_dir, player2_loc)
         pygame.display.flip()
         pygame.time.wait(3)
         # display screen
@@ -126,9 +126,12 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()
             if event.type == pygame.KEYDOWN:
                 # controls player movement
+                if event.key == pygame.K_UP:
+                    player1_dir = "up"
+                if event.key == pygame.K_w:
+                    player2_dir = "up"
                 player1_loc, player2_loc = player_movement(event, player1_loc, player2_loc)
                 square1 = pygame.Rect(player1_loc[0], player1_loc[1], 100, 100)
                 square2 = pygame.Rect(player2_loc[0], player2_loc[1], 100, 100)
@@ -141,4 +144,3 @@ def main():
 
 
 # runs "main" function
-
