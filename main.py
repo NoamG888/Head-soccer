@@ -121,7 +121,7 @@ def main():
     global screen
     pygame.init()
     clock = pygame.time.Clock()
-    counter_time = 90
+    counter_time = 10
     counter_text = counter_to_string(counter_time)
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     font = pygame.font.SysFont(ARIEL, 100)
