@@ -104,9 +104,27 @@ def jump(direction, loc):
         return direction, loc
 
 
+def counter_to_string(counter):
+    min = str(counter // 60)
+    sec = str(counter % 60)
+    together = (min + ":" + sec)
+    return together
+
+
+def win_check(goal_counter1, goal_counter2):
+    if goal_counter1 != goal_counter2:
+        return True
+
+
+
 def main():
     global screen
     pygame.init()
+    clock = pygame.time.Clock()
+    counter_time = 90
+    counter_text = counter_to_string(counter_time)
+    pygame.time.set_timer(pygame.USEREVENT, 1000)
+    font = pygame.font.SysFont(ARIEL, 100)
     player1_loc = [900, PLAYER_MAX_Y]
     player2_loc = [300, PLAYER_MAX_Y]
     player1_keys = [False, False, False]
@@ -157,6 +175,16 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+
+            if event.type == pygame.USEREVENT:
+                if counter_time == 0:
+                    if win_check(goal_counter1.text, goal_counter2.text):
+                        pygame.quit()
+                    else:
+                        counter_time = 45
+                else:
+                    counter_time -= 1
+                counter_text = counter_to_string(counter_time)
             if event.type == pygame.KEYDOWN:
                 # controls player movement
                 player1_keys, player2_keys = change_keys_true(event, player1_keys, player2_keys)
@@ -169,6 +197,7 @@ def main():
         square2 = pygame.Rect(player2_loc[0], player2_loc[1], 100, 100)
         pygame.draw.rect(screen, (0, 150, 0), square1)
         pygame.draw.rect(screen, (150, 0, 0), square2)
+        screen.blit(font.render(counter_text, True, WHITE), ((WINDOW_WIDTH / 2) - 100, 25))
         # updates the scree
         pygame.display.flip()
     # quits the game
