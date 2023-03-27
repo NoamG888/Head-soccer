@@ -78,14 +78,14 @@ def change_keys_false(event, player1_keys, player2_keys):
 
 
 def player_movement(player1_keys, player2_keys, player1_loc, player2_loc):
-    if player1_keys[0]:
+    if player1_keys[0] and player1_loc[0] <= X_RIGHT_GOAL - 100:
         player1_loc[0] += 10
-    if player1_keys[1]:
+    if player1_keys[1] and player1_loc[0] >= X_LEFT_GOAL + 250:
         player1_loc[0] -= 10
 
-    if player2_keys[0]:
+    if player2_keys[0] and player2_loc[0] <= X_RIGHT_GOAL - 100:
         player2_loc[0] += 10
-    if player2_keys[1]:
+    if player2_keys[1] and player2_loc[0] >= X_LEFT_GOAL + 250:
         player2_loc[0] -= 10
 
     return player1_loc, player2_loc
@@ -107,8 +107,8 @@ def jump(direction, loc):
 def main():
     global screen
     pygame.init()
-    player1_loc = [700, 600]
-    player2_loc = [100, 600]
+    player1_loc = [900, PLAYER_MAX_Y]
+    player2_loc = [300, PLAYER_MAX_Y]
     player1_keys = [False, False, False]
     player2_keys = [False, False, False]
     player1_dir = ""
@@ -119,11 +119,11 @@ def main():
     ball = pygame.transform.scale(ball, (50, 50))
     ball_rect = ball.get_rect()
     global ball_speed
-    ball_speed = [3, 3]
+    ball_speed = [3.5, 3.5]
     square1 = pygame.Rect(player1_loc[0], player1_loc[1], 100, 100)
     square2 = pygame.Rect(player2_loc[0], player2_loc[1], 100, 100)
-    left_goal_top = pygame.Rect(0, WINDOW_HEIGHT / 2, 220, 5)
-    right_goal_top = pygame.Rect(WINDOW_WIDTH - 250, WINDOW_HEIGHT / 2, 220, 5)
+    left_goal_top = pygame.Rect(X_LEFT_GOAL, Y_GOAL, 220, 5)
+    right_goal_top = pygame.Rect(X_RIGHT_GOAL, Y_GOAL, 220, 5)
     goal_counter1 = Text(0, 250, 50, 100, WHITE, ARIEL)
     goal_counter2 = Text(0, WINDOW_WIDTH - 250, 50, 100, WHITE, ARIEL)
     # run loop
