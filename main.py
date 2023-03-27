@@ -45,32 +45,61 @@ def ball_movement(ball_rect, player_rect):
             ball_speed[1] = -ball_speed[1]
 
 
-def player_movement(event, player1_loc, player2_loc):
+def change_keys_true(event, player1_keys, player2_keys):
     if event.key == pygame.K_RIGHT:
-        player1_loc[0] += 10
+        player1_keys[0] = True
     if event.key == pygame.K_LEFT:
-        player1_loc[0] -= 10
+        player1_keys[1] = True
+    if event.key == pygame.K_UP:
+        player1_keys[2] = True
 
     if event.key == pygame.K_d:
-        player2_loc[0] += 10
+        player2_keys[0] = True
     if event.key == pygame.K_a:
+        player2_keys[1] = True
+    if event.key == pygame.K_w:
+        player2_keys[2] = True
+
+    return player1_keys, player2_keys
+
+
+def change_keys_false(event, player1_keys, player2_keys):
+    if event.key == pygame.K_RIGHT:
+        player1_keys[0] = False
+    if event.key == pygame.K_LEFT:
+        player1_keys[1] = False
+
+    if event.key == pygame.K_d:
+        player2_keys[0] = False
+    if event.key == pygame.K_a:
+        player2_keys[1] = False
+
+    return player1_keys, player2_keys
+
+
+def player_movement(player1_keys, player2_keys, player1_loc, player2_loc):
+    if player1_keys[0]:
+        player1_loc[0] += 10
+    if player1_keys[1]:
+        player1_loc[0] -= 10
+
+    if player2_keys[0]:
+        player2_loc[0] += 10
+    if player2_keys[1]:
         player2_loc[0] -= 10
 
     return player1_loc, player2_loc
 
 
 def jump(direction, loc):
-    if direction == "up":
+    if direction:
         if loc[1] <= PLAYER_MIN_Y:
-            direction = "down"
+            direction = False
         else:
             loc[1] -= 5
-        pygame.time.delay(10)
         return direction, loc
-    else:
-        if loc[1] >= PLAYER_MAX_Y:
-            direction = ""
-        else:
+    if not direction:
+        if loc[1] <= PLAYER_MAX_Y:
             loc[1] += 5
         return direction, loc
 
@@ -80,6 +109,8 @@ def main():
     pygame.init()
     player1_loc = [700, 600]
     player2_loc = [100, 600]
+    player1_keys = [False, False, False]
+    player2_keys = [False, False, False]
     player1_dir = ""
     player2_dir = ""
     screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -128,19 +159,21 @@ def main():
                 pygame.quit()
             if event.type == pygame.KEYDOWN:
                 # controls player movement
-                if event.key == pygame.K_UP:
-                    player1_dir = "up"
-                if event.key == pygame.K_w:
-                    player2_dir = "up"
-                player1_loc, player2_loc = player_movement(event, player1_loc, player2_loc)
-                square1 = pygame.Rect(player1_loc[0], player1_loc[1], 100, 100)
-                square2 = pygame.Rect(player2_loc[0], player2_loc[1], 100, 100)
-                pygame.draw.rect(screen, (0, 150, 0), square1)
-                pygame.draw.rect(screen, (150, 0, 0), square2)
-        # updates the screen
+                player1_keys, player2_keys = change_keys_true(event, player1_keys, player2_keys)
+            if event.type == pygame.KEYUP:
+                player1_keys, player2_keys = change_keys_false(event, player1_keys, player2_keys)
+        player1_loc, player2_loc = player_movement(player1_keys, player2_keys, player1_loc, player2_loc)
+        player1_keys[2], player1_loc = jump(player1_keys[2], player1_loc)
+        player2_keys[2], player2_loc = jump(player2_keys[2], player2_loc)
+        square1 = pygame.Rect(player1_loc[0], player1_loc[1], 100, 100)
+        square2 = pygame.Rect(player2_loc[0], player2_loc[1], 100, 100)
+        pygame.draw.rect(screen, (0, 150, 0), square1)
+        pygame.draw.rect(screen, (150, 0, 0), square2)
+        # updates the scree
         pygame.display.flip()
     # quits the game
     pygame.quit()
 
 
 # runs "main" function
+main()
