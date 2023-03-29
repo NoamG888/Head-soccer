@@ -24,6 +24,7 @@ def goal_check(ball_rect, left_goal_rect, right_goal_rect, goal_counter1, goal_c
 
 
 def walls_ball_movement(ball_rect):
+    ball_speed[0] = 3.5
     if ball_rect.left < 0 or ball_rect.right > WINDOW_WIDTH:
         ball_speed[0] = -ball_speed[0]
     if ball_rect.top < 0 or ball_rect.bottom > WINDOW_HEIGHT - 50:
@@ -32,7 +33,12 @@ def walls_ball_movement(ball_rect):
 
 # in charge of the ball's movement after a player hits it
 def ball_movement(ball_rect, player_rect):
+    # ball_speed[0] *= 0.999
+    if ball_speed[1] < 3.5:
+        ball_speed[1] += 0.005
     if pygame.Rect.colliderect(ball_rect, player_rect):
+        ball_speed[1] = 3.5
+        # ball_speed[0] = 3.5
         if player_rect.right >= ball_rect.centerx >= player_rect.left and player_rect.bottom >= ball_rect.centery >= player_rect.top:
             ball_speed[0] = -ball_speed[0]
             ball_speed[1] = -ball_speed[1]
