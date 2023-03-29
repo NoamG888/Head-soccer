@@ -1,4 +1,4 @@
-class Button():
+class Button:
 	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
 		self.image = image
 		self.x_pos = pos[0]
@@ -27,3 +27,4 @@ class Button():
 			self.text = self.font.render(self.text_input, True, self.hovering_color)
 		else:
 			self.text = self.font.render(self.text_input, True, self.base_color)
+			

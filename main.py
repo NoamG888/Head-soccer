@@ -79,14 +79,14 @@ def change_keys_false(event, player1_keys, player2_keys):
 
 def player_movement(player1_keys, player2_keys, player1_loc, player2_loc):
     if player1_keys[0] and player1_loc[0] <= X_RIGHT_GOAL - 100:
-        player1_loc[0] += 10
+        player1_loc[0] += 6
     if player1_keys[1] and player1_loc[0] >= X_LEFT_GOAL + 250:
-        player1_loc[0] -= 10
+        player1_loc[0] -= 6
 
     if player2_keys[0] and player2_loc[0] <= X_RIGHT_GOAL - 100:
-        player2_loc[0] += 10
+        player2_loc[0] += 6
     if player2_keys[1] and player2_loc[0] >= X_LEFT_GOAL + 250:
-        player2_loc[0] -= 10
+        player2_loc[0] -= 6
 
     return player1_loc, player2_loc
 
@@ -114,7 +114,6 @@ def counter_to_string(counter):
 def win_check(goal_counter1, goal_counter2):
     if goal_counter1 != goal_counter2:
         return True
-
 
 
 def main():
