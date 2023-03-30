@@ -24,7 +24,10 @@ def goal_check(ball_rect, left_goal_rect, right_goal_rect, goal_counter1, goal_c
 
 
 def walls_ball_movement(ball_rect):
-    ball_speed[0] = 3.5
+    if ball_speed[0] > 0:
+        ball_speed[0] = 3.5
+    else:
+        ball_speed[0] = -3.5
     if ball_rect.left < 0 or ball_rect.right > WINDOW_WIDTH:
         ball_speed[0] = -ball_speed[0]
     if ball_rect.top < 0 or ball_rect.bottom > WINDOW_HEIGHT - 50:
@@ -33,12 +36,14 @@ def walls_ball_movement(ball_rect):
 
 # in charge of the ball's movement after a player hits it
 def ball_movement(ball_rect, player_rect):
-    # ball_speed[0] *= 0.999
+    #  ball_speed[0] *= 0.999
     if ball_speed[1] < 3.5:
-        ball_speed[1] += 0.005
+        ball_speed[1] += 0.015
     if pygame.Rect.colliderect(ball_rect, player_rect):
-        ball_speed[1] = 3.5
-        # ball_speed[0] = 3.5
+        if ball_speed[1] < 0:
+            ball_speed[1] = -3.5
+        else:
+            ball_speed[0] = 3.5
         if player_rect.right >= ball_rect.centerx >= player_rect.left and player_rect.bottom >= ball_rect.centery >= player_rect.top:
             ball_speed[0] = -ball_speed[0]
             ball_speed[1] = -ball_speed[1]
@@ -85,28 +90,38 @@ def change_keys_false(event, player1_keys, player2_keys):
 
 def player_movement(player1_keys, player2_keys, player1_loc, player2_loc):
     if player1_keys[0] and player1_loc[0] <= X_RIGHT_GOAL - 100:
-        player1_loc[0] += 6
+        if player1_loc[0] + 100 != player2_loc[0] or player1_loc[1] != player2_loc[1]:
+            player1_loc[0] += 10
+
     if player1_keys[1] and player1_loc[0] >= X_LEFT_GOAL + 250:
-        player1_loc[0] -= 6
+        if player1_loc[0] != player2_loc[0] + 100 or player1_loc[1] != player2_loc[1]:
+            player1_loc[0] -= 10
 
     if player2_keys[0] and player2_loc[0] <= X_RIGHT_GOAL - 100:
-        player2_loc[0] += 6
+        if player1_loc[0] != player2_loc[0] + 100 or player1_loc[1] != player2_loc[1]:
+            player2_loc[0] += 10
+
     if player2_keys[1] and player2_loc[0] >= X_LEFT_GOAL + 250:
-        player2_loc[0] -= 6
+        if player1_loc[0] + 100 != player2_loc[0] or player1_loc[1] != player2_loc[1]:
+            player2_loc[0] -= 10
 
     return player1_loc, player2_loc
 
 
-def jump(direction, loc):
+def jump(direction, loc, other_player_loc):
     if direction:
         if loc[1] <= PLAYER_MIN_Y:
-            direction = False
+            if loc[1] - 100 <= other_player_loc[1] and (loc[0] - other_player_loc[0] >= 100 or other_player_loc[0] - loc[0] >= 100):
+                 direction = False
+            else:
+                direction = True
         else:
-            loc[1] -= 5
+            loc[1] -= 6
         return direction, loc
     if not direction:
         if loc[1] <= PLAYER_MAX_Y:
-            loc[1] += 5
+            if loc[1] <= other_player_loc[1] and (loc[0] - other_player_loc[0] >= 100 or other_player_loc[0] - loc[0] >=100):
+                loc[1] += 6
         return direction, loc
 
 
@@ -126,7 +141,7 @@ def main():
     global screen
     pygame.init()
     clock = pygame.time.Clock()
-    counter_time = 10
+    counter_time = 90
     counter_text = counter_to_string(counter_time)
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     font = pygame.font.SysFont(ARIEL, 100)
@@ -196,8 +211,8 @@ def main():
             if event.type == pygame.KEYUP:
                 player1_keys, player2_keys = change_keys_false(event, player1_keys, player2_keys)
         player1_loc, player2_loc = player_movement(player1_keys, player2_keys, player1_loc, player2_loc)
-        player1_keys[2], player1_loc = jump(player1_keys[2], player1_loc)
-        player2_keys[2], player2_loc = jump(player2_keys[2], player2_loc)
+        player1_keys[2], player1_loc = jump(player1_keys[2], player1_loc, player2_loc)
+        player2_keys[2], player2_loc = jump(player2_keys[2], player2_loc, player1_loc)
         square1 = pygame.Rect(player1_loc[0], player1_loc[1], 100, 100)
         square2 = pygame.Rect(player2_loc[0], player2_loc[1], 100, 100)
         pygame.draw.rect(screen, (0, 150, 0), square1)
