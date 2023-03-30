@@ -143,6 +143,16 @@ def win_check(goal_counter1, goal_counter2):
 
 def main():
     global screen
+    loc_num = 0
+    or_skin = pygame.image.load("images/אור-removebg-preview.png")
+    orit_skin = pygame.image.load("images/אורית-removebg-preview.png")
+    yael_skin = pygame.image.load("images/יעל-removebg-preview-(1).png")
+    libi_skin = pygame.image.load("images/ליבי-removebg-preview.png")
+    mordehi_skin = pygame.image.load("images/מרדכי-removebg-preview (1).png")
+    nevo_skin = pygame.image.load("images/נבו-removebg-preview.png")
+    roee_skin = pygame.image.load("images/רועי-removebg-preview.png")
+    rotem_skin = pygame.image.load("images/רותם-removebg-preview.png")
+    skins = [or_skin, orit_skin, yael_skin, libi_skin, mordehi_skin, nevo_skin, roee_skin, rotem_skin]
     pygame.init()
     counter_time = 90
     counter_text = counter_to_string(counter_time)
@@ -161,9 +171,9 @@ def main():
     ball_rect = ball.get_rect()
     global ball_speed
     ball_speed = [3.5, 3.5]
-    player1_image = pygame.image.load("images/צילום-מסך-2-של-נועם.png")
+    player1_image = skins[loc_num]
     player1_image = pygame.transform.scale(player1_image, (150, 150))
-    player2_image = pygame.image.load("images/צילום-מסך-2-של-נועם.png")
+    player2_image = skins[loc_num]
     player2_image = pygame.transform.scale(player2_image, (150, 150))
     left_goal_top = pygame.Rect(X_LEFT_GOAL, Y_GOAL, 220, 5)
     right_goal_top = pygame.Rect(X_RIGHT_GOAL, Y_GOAL, 220, 5)
@@ -206,6 +216,8 @@ def main():
             if event.type == pygame.KEYDOWN:
                 # controls player movement
                 player1_keys, player2_keys = change_keys_true(event, player1_keys, player2_keys)
+                if event.key == pygame.K_q:
+                    loc_num += 1
             if event.type == pygame.KEYUP:
                 player1_keys, player2_keys = change_keys_false(event, player1_keys, player2_keys)
         player1_loc, player2_loc = player_movement(player1_keys, player2_keys, player1_loc, player2_loc)
