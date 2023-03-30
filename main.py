@@ -10,15 +10,20 @@ def add_image(image_path, x_position, y_position, width, height):
     screen.blit(image, (x_position, y_position))
 
 
-# displays images on the screen using the "add_image" function
-def goal_check(ball_rect, left_goal_rect, right_goal_rect, goal_counter1, goal_counter2):
+def goal_check(ball_rect, left_goal_rect, right_goal_rect, goal_counter1, goal_counter2, goal_text):
     if ball_rect.right <= left_goal_rect.right and ball_rect.top >= left_goal_rect.bottom:
         goal_counter2.text += 1
-        ball_rect = pygame.Rect((WINDOW_WIDTH-70) // 2, 50, 70, 70)
+        goal_text.display(screen)
+        ball_rect = pygame.Rect(0, 50, 70, 70)
+        pygame.display.update()
+        pygame.time.delay(3000)
         return ball_rect
     if ball_rect.left >= right_goal_rect.left and ball_rect.top >= right_goal_rect.bottom:
         goal_counter1.text += 1
-        ball_rect = pygame.Rect((WINDOW_WIDTH-50) // 2, 50, 70, 70)
+        goal_text.display(screen)
+        ball_rect = pygame.Rect(WINDOW_WIDTH - 70, 50, 70, 70)
+        pygame.display.update()
+        pygame.time.delay(3000)
         return ball_rect
     return ball_rect
 
@@ -36,14 +41,13 @@ def walls_ball_movement(ball_rect):
 
 # in charge of the ball's movement after a player hits it
 def ball_movement(ball_rect, player_rect):
-    #  ball_speed[0] *= 0.999
     if ball_speed[1] < 3.5:
         ball_speed[1] += 0.015
     if pygame.Rect.colliderect(ball_rect, player_rect):
         if ball_speed[1] < 0:
             ball_speed[1] = -3.5
         else:
-            ball_speed[0] = 3.5
+            ball_speed[1] = 3.5
         if player_rect.right >= ball_rect.centerx >= player_rect.left and player_rect.bottom >= ball_rect.centery >= player_rect.top:
             ball_speed[0] = -ball_speed[0]
             ball_speed[1] = -ball_speed[1]
@@ -112,7 +116,7 @@ def jump(direction, loc, other_player_loc):
     if direction:
         if loc[1] <= PLAYER_MIN_Y:
             if loc[1] - 100 <= other_player_loc[1] and (loc[0] - other_player_loc[0] >= 100 or other_player_loc[0] - loc[0] >= 100):
-                 direction = False
+                direction = False
             else:
                 direction = True
         else:
@@ -120,7 +124,7 @@ def jump(direction, loc, other_player_loc):
         return direction, loc
     if not direction:
         if loc[1] <= PLAYER_MAX_Y:
-            if loc[1] <= other_player_loc[1] and (loc[0] - other_player_loc[0] >= 100 or other_player_loc[0] - loc[0] >=100):
+            if loc[1] <= other_player_loc[1] and (loc[0] - other_player_loc[0] >= 100 or other_player_loc[0] - loc[0] >= 100):
                 loc[1] += 6
         return direction, loc
 
@@ -140,12 +144,11 @@ def win_check(goal_counter1, goal_counter2):
 def main():
     global screen
     pygame.init()
-    clock = pygame.time.Clock()
     counter_time = 90
     counter_text = counter_to_string(counter_time)
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     font = pygame.font.SysFont(ARIEL, 100)
-    player1_loc = [900, PLAYER_MAX_Y]
+    player1_loc = [800, PLAYER_MAX_Y]
     player2_loc = [300, PLAYER_MAX_Y]
     player1_keys = [False, False, False]
     player2_keys = [False, False, False]
@@ -158,23 +161,18 @@ def main():
     ball_rect = ball.get_rect()
     global ball_speed
     ball_speed = [3.5, 3.5]
-    square1 = pygame.Rect(player1_loc[0], player1_loc[1], 100, 100)
-    square2 = pygame.Rect(player2_loc[0], player2_loc[1], 100, 100)
+    player1_image = pygame.image.load("images/צילום-מסך-2-של-נועם.png")
+    player1_image = pygame.transform.scale(player1_image, (150, 150))
+    player2_image = pygame.image.load("images/צילום-מסך-2-של-נועם.png")
+    player2_image = pygame.transform.scale(player2_image, (150, 150))
     left_goal_top = pygame.Rect(X_LEFT_GOAL, Y_GOAL, 220, 5)
     right_goal_top = pygame.Rect(X_RIGHT_GOAL, Y_GOAL, 220, 5)
     goal_counter1 = Text(0, 250, 50, 100, WHITE, ARIEL)
     goal_counter2 = Text(0, WINDOW_WIDTH - 250, 50, 100, WHITE, ARIEL)
+    goal_text = Text("goal!!!", WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 150, WHITE, ARIEL)
     # run loop
     running = True
     while running:
-        ball_rect = goal_check(ball_rect, left_goal_top, right_goal_top, goal_counter1, goal_counter2)
-        # ball movement
-        ball_rect = ball_rect.move(ball_speed)
-        walls_ball_movement(ball_rect)
-        ball_movement(ball_rect, square1)
-        ball_movement(ball_rect, square2)
-        ball_movement(ball_rect, left_goal_top)
-        ball_movement(ball_rect, right_goal_top)
         if player1_dir == "up" or player1_dir == "down":
             player1_dir, player1_loc = (player1_dir, player1_loc)
         if player2_dir == "up" or player2_dir == "down":
@@ -185,8 +183,8 @@ def main():
         field = pygame.image.load("images/מגרש.gif")
         field = pygame.transform.scale(field, (WINDOW_WIDTH, WINDOW_HEIGHT))
         screen.blit(field, (0, 0))
-        pygame.draw.rect(screen, (0, 150, 0), square1)
-        pygame.draw.rect(screen, (150, 0, 0), square2)
+        screen.blit(player1_image, (player1_loc[0], player1_loc[1]))
+        screen.blit(player2_image, (player2_loc[0], player2_loc[1]))
         # display ball
         screen.blit(ball, ball_rect)
         goal_counter1.display(screen)
@@ -213,11 +211,19 @@ def main():
         player1_loc, player2_loc = player_movement(player1_keys, player2_keys, player1_loc, player2_loc)
         player1_keys[2], player1_loc = jump(player1_keys[2], player1_loc, player2_loc)
         player2_keys[2], player2_loc = jump(player2_keys[2], player2_loc, player1_loc)
-        square1 = pygame.Rect(player1_loc[0], player1_loc[1], 100, 100)
-        square2 = pygame.Rect(player2_loc[0], player2_loc[1], 100, 100)
-        pygame.draw.rect(screen, (0, 150, 0), square1)
-        pygame.draw.rect(screen, (150, 0, 0), square2)
+        player1_rect = pygame.Rect(player1_loc[0], player1_loc[1], 150, 150)
+        player2_rect = pygame.Rect(player2_loc[0], player2_loc[1], 150, 150)
+        screen.blit(player1_image, (player1_loc[0], player1_loc[1]))
+        screen.blit(player2_image, (player2_loc[0], player2_loc[1]))
         screen.blit(font.render(counter_text, True, WHITE), ((WINDOW_WIDTH / 2) - 100, 25))
+        ball_rect = goal_check(ball_rect, left_goal_top, right_goal_top, goal_counter1, goal_counter2, goal_text)
+        # ball movement
+        ball_rect = ball_rect.move(ball_speed)
+        walls_ball_movement(ball_rect)
+        ball_movement(ball_rect, player1_rect)
+        ball_movement(ball_rect, player2_rect)
+        ball_movement(ball_rect, left_goal_top)
+        ball_movement(ball_rect, right_goal_top)
         # updates the scree
         pygame.display.flip()
     # quits the game
